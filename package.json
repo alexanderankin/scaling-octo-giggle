@@ -1,0 +1,26 @@
+{
+  "name": "whoownswhat",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "bootstrap": "^4.1.0",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "fuzzy-search": "^2.0.1",
+    "hbs": "~4.0.1",
+    "jquery": "^3.3.1",
+    "lodash": "^4.17.10",
+    "morgan": "~1.8.1",
+    "popper.js": "^1.14.3",
+    "qs": "^6.5.1",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "serve-favicon": "~2.4.2",
+    "typeahead.js": "^0.11.1"
+  }
+}

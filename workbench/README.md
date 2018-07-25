@@ -16,3 +16,5 @@ Data was downloaded by selecting these options:
 |3) Download|CSV|
 
 Data took 5-10 minutes to create and took up 120 MB of disk space.
+
+Data appeared to be weirdly joined and attempt two was without violations.

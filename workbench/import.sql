@@ -50,15 +50,59 @@ create table parcel_all (
 
 
 -- 0129G00076000000,
--- "{'coordinates': [[[[-79.9045480619638, 40.4205741334134], [-79.9044678573968, 40.420579833812], [-79.9044559322434, 40.42047356834], [-79.904806838939, 40.4204508064628], [-79.9048173523409, 40.4205550369696], [-79.9047277409854, 40.4205614276452], [-79.9046367795512, 40.4205678438844], [-79.9045480619638, 40.4205741334134]]]], 'type': 'MultiPolygon'}",
+-- "{
+--   "coordinates": [
+--     [
+--       [
+--         [
+--           -79.9045480619638,
+--           40.4205741334134
+--         ],
+--         [
+--           -79.9044678573968,
+--           40.420579833812
+--         ],
+--         [
+--           -79.9044559322434,
+--           40.42047356834
+--         ],
+--         [
+--           -79.904806838939,
+--           40.4204508064628
+--         ],
+--         [
+--           -79.9048173523409,
+--           40.4205550369696
+--         ],
+--         [
+--           -79.9047277409854,
+--           40.4205614276452
+--         ],
+--         [
+--           -79.9046367795512,
+--           40.4205678438844
+--         ],
+--         [
+--           -79.9045480619638,
+--           40.4205741334134
+--         ]
+--       ]
+--     ]
+--   ],
+--   "type": "MultiPolygon"
+-- }",
 
--- 207, ,PHILANDER ST,PITTSBURGH,PA, ,15218,114,14th Ward - PITTSBURGH,10,REGULAR,,RESIDENTIAL,010,SINGLE FAMILY,3750.0,HOM,,,,11-17-2011,207   PHILANDER ST   ,  ,PITTSBURGH PA  ,15218
+-- 207, ,PHILANDER ST,PITTSBURGH,PA, ,15218,114,14th Ward - PITTSBURGH,10,REGULAR,,RESIDENTIAL,
+-- 010,SINGLE FAMILY,3750.0,HOM,,,,11-17-2011,207   PHILANDER ST   ,  ,PITTSBURGH PA  ,15218
+
+
 \! echo "Loading data...";
 LOAD DATA LOCAL INFILE 'parcel_data.csv'
   INTO TABLE parcel_all
   FIELDS TERMINATED BY ','
   optionally enclosed by '"'
   LINES TERMINATED BY '\r\n' IGNORE 1 LINES;
+
 
 \! echo "Renaming fields...";
 drop table if exists parcel;
@@ -102,6 +146,7 @@ create table parcel as
 alter table parcel add column id int auto_increment primary key first, auto_increment = 1;
 alter table parcel add key(ADDRESS1, ADDRESS2, ADDRESS3, ADDRESS4);
 
+
 \! echo "creating landlord  table: finding landlords...";
 create table landlord as select distinct
   ADDRESS1, ADDRESS2, ADDRESS3, ADDRESS4
@@ -122,8 +167,16 @@ update parcel p
     )
   SET p.landlord_id = l.id;
 
+
 \! echo "updating landlord ref   : add foriegn key...";
 ALTER TABLE parcel ADD FOREIGN KEY (landlord_id) REFERENCES landlord(id);
+
+alter TABLE parcel
+  drop column ADDRESS1, 
+  drop column ADDRESS2, 
+  drop column ADDRESS3,
+  drop column ADDRESS4;
+
 
 -- select count(*)
 -- select address, num_props

@@ -1,40 +1,28 @@
+var knex = require('knex')({ client: 'mysql' });
+
 var db = require('../db');
 
 /**
  * { }
  */
 function queryAddress(address, done) {
-  knex.select('p').
-  var query = `
-    select *
-    from parcel p
-    where
-      p.HOUSENUM = ? and (
-        p.PIN      like ? or
-        p.FRACTION like ? or
-        p.ADDRESS  like ? or
-        p.CITY     like ? or
-        p.STATE    like ? or
-        p.UNIT     like ? or
-        p.ZIP      like ?
-      )
-    limit 20;`;
+  var query = knex
+    .select("*")
+    .from("parcel")
+    .where(function() {
+      for (f in address)
+        if (f === 'HOUSENUM') {
+          this.where(f, address[f])
+        } else {
+          this.whereRaw(f + ' like \'%' + address[f] + '%\'');
+        }
+    })
+    .limit(20);
 
   db.getConnection(function (err, conn) {
     if (err) return done(err);
-    var params = [
-      `%${address.PIN}%`,
-      // `%${address.HOUSENUM}%`,
-      address.HOUSENUM || null,
-      `%${address.FRACTION}%`,
-      `%${address.ADDRESS}%`,
-      `%${address.CITY}%`,
-      `%${address.STATE}%`,
-      `%${address.UNIT}%`,
-      `%${address.ZIP}%`
-    ];
-    console.log("querying", db.mysql.format(query, params));
-    conn.query(query, params, function (err, results) {
+
+    conn.query(query.toQuery(), function (err, results) {
       conn.release();
       if (err) return done(err);
 

@@ -178,30 +178,3 @@ alter TABLE parcel
   drop column ADDRESS2, 
   drop column ADDRESS3,
   drop column ADDRESS4;
-
-
--- select count(*)
--- select address, num_props
--- from 
---   (select
---     count(PIN) as num_props,
---     concat(ADDRESS1, ADDRESS2, ADDRESS3, ADDRESS4) as address
---   from parcel
---   group by
---     ADDRESS1,
---     ADDRESS2,
---     ADDRESS3,
---     ADDRESS4
---     ) as t
---   -- order by
---   --   num_props desc) as t
--- where num_props > 5
--- order by address
--- limit 10;
-
--- select
---   ADDRESS1,
---   ADDRESS2,
---   ADDRESS3,
---   ADDRESS4
--- from parcel limit 10;

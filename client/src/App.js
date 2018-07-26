@@ -19,7 +19,6 @@ class App extends Component {
             <Route path="/topics"           component={Components.About} />
           </div>
         </Router>
-        {/*<p className="App-intro"></p>*/}
       </div>
     );
   }

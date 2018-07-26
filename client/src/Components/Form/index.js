@@ -11,7 +11,7 @@ class Form extends Component {
     return (
       <div className="container">
         <div className="row justify-content-md-center" style={headRoom}>
-          <div className="col col-md-6">
+          <div className="col col-md-9">
             <Input></Input>
           </div>
         </div>

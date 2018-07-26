@@ -4,32 +4,37 @@ var db = require('../db');
  * { }
  */
 function queryAddress(address, done) {
+  knex.select('p').
   var query = `
     select *
     from parcel p
     where
-      p.PIN      = ? or
-      p.HOUSENUM = ? or
-      p.FRACTION = ? or
-      p.ADDRESS  = ? or
-      p.CITY     = ? or
-      p.STATE    = ? or
-      p.UNIT     = ? or
-      p.ZIP      = ?
+      p.HOUSENUM = ? and (
+        p.PIN      like ? or
+        p.FRACTION like ? or
+        p.ADDRESS  like ? or
+        p.CITY     like ? or
+        p.STATE    like ? or
+        p.UNIT     like ? or
+        p.ZIP      like ?
+      )
     limit 20;`;
 
   db.getConnection(function (err, conn) {
     if (err) return done(err);
-    conn.query(query, [
-      address.PIN,
-      address.HOUSENUM,
-      address.FRACTION,
-      address.ADDRESS,
-      address.CITY,
-      address.STATE,
-      address.UNIT,
-      address.ZIP
-    ], function (err, results) {
+    var params = [
+      `%${address.PIN}%`,
+      // `%${address.HOUSENUM}%`,
+      address.HOUSENUM || null,
+      `%${address.FRACTION}%`,
+      `%${address.ADDRESS}%`,
+      `%${address.CITY}%`,
+      `%${address.STATE}%`,
+      `%${address.UNIT}%`,
+      `%${address.ZIP}%`
+    ];
+    console.log("querying", db.mysql.format(query, params));
+    conn.query(query, params, function (err, results) {
       conn.release();
       if (err) return done(err);
 
@@ -74,18 +79,21 @@ function queryLandlord(id, show, page, done) {
   });
 }
 
-queryAddress({ PIN: '0129G00076000000', HOUSENUM: 207 }, function (err, results) {
-  // console.log(err, results);
-  var landlord = results[0].landlord_id;
-  console.log("landlord is", landlord);
-  queryLandlord(landlord, 10, 1, function (err, res) {
-    console.log(err, res);
-    queryLandlord(landlord, 10, 2, function (err, res) {
-      console.log(err, res);
-    });
-  });
-});
+// queryAddress({ PIN: '0129G00076000000', HOUSENUM: 207 }, function (err, results) {
+//   // console.log(err, results);
+//   var landlord = results[0].landlord_id;
+//   console.log("landlord is", landlord);
+//   queryLandlord(landlord, 10, 1, function (err, res) {
+//     console.log(err, res);
+//     queryLandlord(landlord, 10, 2, function (err, res) {
+//       console.log(err, res);
+//     });
+//   });
+// });
 
+module.exports = {
+  queryAddress, queryLandlord
+};
 
 /*
 select PIN, HOUSENUM, FRACTION, ADDRESS, CITY, STATE, UNIT, ZIP from parcel limit 20;

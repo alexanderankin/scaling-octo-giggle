@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 
 // import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Redirect } from "react-router";
@@ -6,44 +8,56 @@ import _ from 'lodash';
 // import $ from 'jquery';
 // import Bloodhound from 'typeahead.js';
 
-import reqs from '../../requests';
-
-const MINIMUM_LENGTH = 4;
+// import reqs from '../../requests';
 
 class Input extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      PIN:          '',
+      HOUSENUM:     '',
+      FRACTION:     '',
+      ADDRESS:      '',
+      CITY:         '',
+      STATE:        '',
+      UNIT:         '',
+      ZIP:          '',
       addressSoFar: '',
       suggestions: [],
       error: '',
-      loading: false,
       success: false,
     };
 
-    this.suggestions = _.debounce(this.suggestions, 100).bind(this);
+    this.suggestions = _.debounce(this.suggestions, 300).bind(this);
   }
 
   suggestions() {
-    var address = this.state.addressSoFar;
-    if (address.length < MINIMUM_LENGTH) { return; }
-
-    var that = this;
-    var body = { address };
-
-    reqs.get('/api/suggestions', body)
-      .then(function (res) {
-        that.setState({ error: '', suggestions: res.suggestions });
+    window.fetch('/api/address/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(this.state)
+    })
+      .then(response => {
+        this.progress = false;
+        return response.json();
       })
-      .catch(function (error) {
-        that.setState({ error: error.message });
-      });
+      .then(body => {
+        this.setState({ suggestions: body.suggestions });
+      })
+      .catch(e => {
+      console.log(this.state);
+      this.setState({ error: (e + '') });
+    });
   }
 
   submitAction = (event) => {
-    var that = this;
     event.preventDefault();
+    if (this.state.suggestions && this.state.suggestions > 0) {
+      console.log('Using suggestion', this.state.suggestions[0]);
+    }
+    // var that = this;
+    /*
     // console.log("submitAction");
     this.setState({ loading: true }, function () {
       reqs.get('/api/address/exist', { address: this.state.addressSoFar })
@@ -60,13 +74,12 @@ class Input extends Component {
           that.setState({ loading: false, error: error + '' });
         });
     })
-  }
+  */}
 
   inputChange = (event) => {
     event.preventDefault();
-    this.setState({ addressSoFar: event.target.value }, function() {
-      this.suggestions();
-    });
+    var o = {}; o[event.target.dataset.field] = event.target.value;
+    this.setState(o, function() { this.suggestions(); });
   }
 
   render() {
@@ -75,39 +88,30 @@ class Input extends Component {
       return <Redirect to={'/parcel/' + this.state.addressSoFar} />
     }
 
-    var asf = this.state.addressSoFar;
-
     return (
       <div>
         <p>
           Enter an address and find other buildings your landlord might own:
         </p>
         <form onSubmit={this.submitAction}>
-          <div className="form-group">
-            <input
-              disabled={this.state.loading}
-              className="form-control address-suggested"
-              type="text" 
-              aria-label={"Enter address of a building in Pittsburgh here."}
-              aria-required="true"
-              onChange={this.inputChange}
-              value={this.state.addressSoFar}
-              name="address-input"
-              list="address-suggestions"
-            />
-            <datalist id="address-suggestions">
-              {this.state.suggestions.map(function (s) {
-                return <option value={s.value + ''} key={s.id}>{asf}</option>
-              })}
-            </datalist>
-            {this.state.loading
-              ? <div className="loader">Loading...</div>
-              : null}
+          <div className="form-group row justify-content-md-center">
+            <FormGroup type="text" desc="PIN"      width={2} onChange={this.inputChange} value={this.state.PIN} />
+            <FormGroup type="text" desc="HOUSENUM" width={1} onChange={this.inputChange} value={this.state.HOUSENUM} />
+            <FormGroup type="text" desc="FRACTION" width={1} onChange={this.inputChange} value={this.state.FRACTION} />
+            <FormGroup type="text" desc="ADDRESS"  width={4} onChange={this.inputChange} value={this.state.ADDRESS} />
+            <FormGroup type="text" desc="CITY"     width={1} onChange={this.inputChange} value={this.state.CITY} />
+            <FormGroup type="text" desc="STATE"    width={1} onChange={this.inputChange} value={this.state.STATE} />
+            <FormGroup type="text" desc="UNIT"     width={1} onChange={this.inputChange} value={this.state.UNIT} />
+            <FormGroup type="text" desc="ZIP"      width={1} onChange={this.inputChange} value={this.state.ZIP} />
           </div>
         </form>
-        {this.state.suggestions.length === 0 && asf.length >= MINIMUM_LENGTH
-          ? <p>This address is not found.</p>
-          : null}
+        <ul>
+          {this.state.suggestions.map(suggestion => {
+            return <li key={suggestion.id}>
+              <code>{JSON.stringify(suggestion)}</code>
+            </li>;
+          })}
+        </ul>
         {this.state.error
           ? <p>There was an error: {this.state.error}</p>
           : null}
@@ -117,3 +121,39 @@ class Input extends Component {
 }
 
 export default Input;
+
+const FULLTEXT = {
+  PIN: 'PIN (Property Identification Number)',
+  HOUSENUM: '###',
+  FRACTION: '1/2',
+  ADDRESS: 'Street Address',
+  CITY: 'City',
+  STATE: 'State',
+  UNIT: 'Unit No',
+  ZIP: 'Zip Code',
+};
+
+class FormGroup extends Component {
+  render() {
+    return <div className={"col-md-" + this.props.width} style={{ paddingLeft: 0, paddingRight: 0 }}>
+      <input
+        className="form-control form-control-sm"
+        type={this.props.type} 
+        placeholder={FULLTEXT[this.props.desc] || ''}
+        title={FULLTEXT[this.props.desc] || ''}
+        data-field={this.props.desc}
+        aria-label={'Enter the ' + this.props.desc + ' here.'}
+        aria-required="false"
+        onChange={this.props.onChange}
+        value={this.props.value}
+      />
+      </div>;
+  }
+}
+
+FormGroup.propTypes = {
+  type: PropTypes.string.isRequired,
+  desc: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired
+};

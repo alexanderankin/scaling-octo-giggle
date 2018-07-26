@@ -19,10 +19,8 @@ router.post('/address', function(req, res, next) {
     UNIT     : req.body['UNIT']     || '',
     ZIP      : req.body['ZIP']      || ''
   }, function (err, results) {
-    // console.log(err, results);
-    setTimeout(function() {
-      res.json({ suggestions: results });
-    }, 1000);
+    console.log(results);
+    res.json({});
   })
 });
 

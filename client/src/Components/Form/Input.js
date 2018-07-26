@@ -23,13 +23,13 @@ class Input extends Component {
       STATE:        '',
       UNIT:         '',
       ZIP:          '',
-      addressSoFar: '',
       suggestions: [],
       error: '',
       success: false,
     };
 
-    this.suggestions = _.debounce(this.suggestions, 300).bind(this);
+    this.suggestions = _.debounce(this.suggestions, 100).bind(this);
+    this.submitAction = this.submitAction.bind(this);
   }
 
   suggestions() {
@@ -51,30 +51,14 @@ class Input extends Component {
     });
   }
 
-  submitAction = (event) => {
+  submitAction(event) {
     event.preventDefault();
-    if (this.state.suggestions && this.state.suggestions > 0) {
+    console.log("submitAction")
+    if (this.state.suggestions && this.state.suggestions.length === 1) {
       console.log('Using suggestion', this.state.suggestions[0]);
+      this.setState({ success: true });
     }
-    // var that = this;
-    /*
-    // console.log("submitAction");
-    this.setState({ loading: true }, function () {
-      reqs.get('/api/address/exist', { address: this.state.addressSoFar })
-        .then(function (res) {
-          if (res.exists) {
-            that.setState({ success: true });
-          }
-
-          else {
-            that.setState({ loading: false, error: 'This address not found.' });
-          }
-        })
-        .catch(function (error) {
-          that.setState({ loading: false, error: error + '' });
-        });
-    })
-  */}
+  }
 
   inputChange = (event) => {
     event.preventDefault();
@@ -84,8 +68,7 @@ class Input extends Component {
 
   render() {
     if (this.state.success) {
-      // return <p>Sending to page with address {this.state.addressSoFar}.</p>
-      return <Redirect to={'/parcel/' + this.state.addressSoFar} />
+      return <Redirect to={'/landlord/' + this.state.suggestions[0].landlord_id} />
     }
 
     return (
@@ -94,6 +77,7 @@ class Input extends Component {
           Enter an address and find other buildings your landlord might own:
         </p>
         <form onSubmit={this.submitAction}>
+          <input type="submit" value="Submit" style={{ display: 'none' }}/>
           <div className="form-group row justify-content-md-center">
             <FormGroup type="text" desc="PIN"      width={2} onChange={this.inputChange} value={this.state.PIN} />
             <FormGroup type="text" desc="HOUSENUM" width={1} onChange={this.inputChange} value={this.state.HOUSENUM} />

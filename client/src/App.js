@@ -14,9 +14,9 @@ class App extends Component {
         </header>
         <Router>
           <div>
-            <Route exact path="/"           component={Components.Form} />
-            <Route path="/parcel/:address"  component={Components.Buildings} />
-            <Route path="/topics"           component={Components.About} />
+            <Route exact path="/"       component={Components.Form} />
+            <Route path="/landlord/:id" component={Components.Buildings} />
+            <Route path="/topics"       component={Components.About} />
           </div>
         </Router>
       </div>

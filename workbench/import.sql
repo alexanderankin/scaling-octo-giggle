@@ -145,6 +145,8 @@ create table parcel as
 
 alter table parcel add column id int auto_increment primary key first, auto_increment = 1;
 alter table parcel add key(ADDRESS1, ADDRESS2, ADDRESS3, ADDRESS4);
+alter table parcel modify column PIN varchar(20) not null;
+alter table parcel add unique key(PIN);
 
 
 \! echo "creating landlord  table: finding landlords...";

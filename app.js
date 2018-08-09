@@ -1,3 +1,7 @@
+var path = require('path');
+var dotenv = require('dotenv');
+dotenv.config({ path: path.join(__dirname, '.env') });
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');

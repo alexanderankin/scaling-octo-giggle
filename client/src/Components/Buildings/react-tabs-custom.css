@@ -1,0 +1,12 @@
+.react-tabs__tab {
+  margin: 0 0 0 20px;
+  background: #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHElEQVQYV2NMS0v7P2vWLEYGKIAzMARgKjFUAABWhQgF0A6r6AAAAABJRU5ErkJggg==) repeat;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+.react-tabs__tab--selected {
+  background: #fff !important;
+  border-top-right-radius: 5px !important;
+  border-top-left-radius: 5px !important;
+}

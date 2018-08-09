@@ -1,14 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-
-// import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Redirect } from "react-router";
 import _ from 'lodash';
-// import $ from 'jquery';
-// import Bloodhound from 'typeahead.js';
-
-// import reqs from '../../requests';
 
 class Input extends Component {
   constructor(props) {
@@ -43,7 +37,11 @@ class Input extends Component {
         return response.json();
       })
       .then(body => {
-        this.setState({ suggestions: body.suggestions });
+        if (body.suggestions)
+          this.setState({ suggestions: body.suggestions });
+
+        else
+          this.setState({ error: (body.err || body.error || 'Error!') });
       })
       .catch(e => {
       console.log(this.state);

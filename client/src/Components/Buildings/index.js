@@ -57,26 +57,30 @@ class Buildings extends Component {
         //       <p style={{color: 'purple'}}>Hello</p>
         //     </div></div>
         // </div>
+
+
     return (
       <div>
         <Header data={{ numBuildings }} />
-        <Tabs>
-          <TabList>
-            <Tab>Map</Tab>
-            <Tab>List</Tab>
-            <Tab>Summary</Tab>
-          </TabList>
+        {this.state.data.results
+          ? <Tabs defaultIndex={1} >
+              <TabList>
+                <Tab>Map</Tab>
+                <Tab>List</Tab>
+                <Tab>Summary</Tab>
+              </TabList>
 
-          <TabPanel>
-            <Map     />
-          </TabPanel>
-          <TabPanel>
-            <List    />
-          </TabPanel>
-          <TabPanel>
-            <Summary />
-          </TabPanel>
-        </Tabs>
+              <TabPanel>
+                <Map     data={data} />
+              </TabPanel>
+              <TabPanel>
+                <List   selected={true} data={data} />
+              </TabPanel>
+              <TabPanel>
+                <Summary data={data} />
+              </TabPanel>
+            </Tabs>
+          : null}
       </div>
     );
   }
